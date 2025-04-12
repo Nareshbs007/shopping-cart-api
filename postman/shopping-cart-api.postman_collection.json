@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "b5e8f9d2-1a3c-4b5d-8e6f-7a8b9c0d1e2f",
+		"name": "Shopping Cart API",
+		"description": "Collection for Shopping Cart API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Cart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/carts/{{cartId}}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "carts", "{{cartId}}"]
+				},
+				"description": "Get cart details by cart ID"
+			}
+		},
+		{
+			"name": "Create Cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/carts?userId={{userId}}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "carts"],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{userId}}",
+							"description": "ID of the user creating the cart"
+						}
+					]
+				},
+				"description": "Create a new shopping cart"
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Save the cart ID to a collection variable",
+							"pm.collectionVariables.set(\"cartId\", jsonData.id);",
+							"",
+							"// Log the saved cart ID",
+							"console.log(\"Saved cartId: \" + jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "Add/Update Cart Items",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\": \"prod123\",\n    \"productName\": \"Test Product\",\n    \"price\": 29.99,\n    \"quantity\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/carts/{{cartId}}/items",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "carts", "{{cartId}}", "items"]
+				},
+				"description": "Add or update items in the cart"
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Check if there are items in the cart",
+							"if (jsonData.items && jsonData.items.length > 0) {",
+							"    // Save the first item's ID to a collection variable",
+							"    pm.collectionVariables.set(\"itemId\", jsonData.items[0].id);",
+							"    console.log(\"Saved itemId: \" + jsonData.items[0].id);",
+							"} else {",
+							"    console.log(\"No items in the cart to save itemId\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "Remove Cart Item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/carts/{{cartId}}/items/{{itemId}}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "carts", "{{cartId}}", "items", "{{itemId}}"]
+				},
+				"description": "Remove a specific item from the cart"
+			}
+		},
+		{
+			"name": "Delete Cart",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/carts/{{cartId}}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "carts", "{{cartId}}"]
+				},
+				"description": "Delete the entire cart"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cartId",
+			"value": "your-cart-id",
+			"type": "string"
+		},
+		{
+			"key": "itemId",
+			"value": "your-item-id",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "user123",
+			"type": "string"
+		}
+	]
+} 
