@@ -1,85 +1,99 @@
 # Shopping Cart API
 
-A Spring Boot REST API for managing shopping carts with AWS DynamoDB integration.
+A RESTful API for managing shopping carts built with Spring Boot.
+
+## Features
+
+- Create, read, update, and delete shopping carts
+- Add and remove items from carts
+- Calculate cart totals
+- Track cart status (ACTIVE, CHECKOUT, ABANDONED)
+- Swagger UI documentation
+- H2 in-memory database for development
+- Exception handling with detailed error messages
+
+## Tech Stack
+
+- Java 17
+- Spring Boot 3.3.0-M2
+- Spring Data JPA
+- H2 Database
+- Maven
+- Swagger/OpenAPI 3.0
+- Lombok
 
 ## Prerequisites
 
 - Java 17 or higher
-- Maven
-- AWS Account with DynamoDB access
-- AWS CLI configured with appropriate credentials
+- Maven 3.6 or higher
 
-## Setup
+## Getting Started
 
-1. Clone the repository
-2. Update the AWS credentials in `src/main/resources/application.properties`:
-   ```
-   aws.access.key.id=your-access-key-id
-   aws.secret.access.key=your-secret-access-key
-   aws.region=your-aws-region
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Nareshbs007/shopping-cart-api.git
+   cd shopping-cart-api
    ```
 
-3. Build the project:
+2. Build the project:
    ```bash
    mvn clean install
    ```
 
-4. Run the application:
+3. Run the application:
    ```bash
    mvn spring-boot:run
    ```
 
-## API Endpoints
+The application will start on `http://localhost:8080`
 
-### Shopping Cart Operations
+## API Documentation
 
-1. Create a new cart
-   ```
-   POST /api/carts?userId={userId}
-   ```
+Once the application is running, you can access the Swagger UI documentation at:
+```
+http://localhost:8080/swagger-ui.html
+```
 
-2. Get cart details
-   ```
-   GET /api/carts/{cartId}
-   ```
+### Available Endpoints
 
-3. Add item to cart
-   ```
-   POST /api/carts/{cartId}/items
-   Body:
-   {
-     "productId": "string",
-     "productName": "string",
-     "price": number,
-     "quantity": number
-   }
-   ```
+#### Shopping Cart Operations
+- `POST /api/carts` - Create a new shopping cart
+- `GET /api/carts/{cartId}` - Get cart details
+- `PUT /api/carts/{cartId}` - Update cart status
+- `DELETE /api/carts/{cartId}` - Delete a cart
 
-4. Remove item from cart
-   ```
-   DELETE /api/carts/{cartId}/items/{itemId}
-   ```
+#### Cart Item Operations
+- `POST /api/carts/{cartId}/items` - Add item to cart
+- `PUT /api/carts/{cartId}/items/{itemId}` - Update item quantity
+- `DELETE /api/carts/{cartId}/items/{itemId}` - Remove item from cart
 
-5. Delete cart
-   ```
-   DELETE /api/carts/{cartId}
-   ```
+## Database
 
-## DynamoDB Tables
+The application uses H2 in-memory database for development. The database console is available at:
+```
+http://localhost:8080/h2-console
+```
 
-The application uses two DynamoDB tables:
-1. `ShoppingCarts` - Stores shopping cart information
-2. `CartItems` - Stores items in the shopping carts
+Default credentials:
+- JDBC URL: `jdbc:h2:mem:shoppingcartdb`
+- Username: `sa`
+- Password: `password`
 
 ## Error Handling
 
-The API includes basic error handling for common scenarios:
-- Cart not found
-- Invalid input data
-- AWS service errors
+The API provides detailed error messages for common scenarios:
+- Resource not found (404)
+- Bad request (400)
+- Internal server error (500)
 
-## Security
+## Contributing
 
-- AWS credentials should be properly secured and not committed to version control
-- Consider using AWS IAM roles and policies for production deployments
-- Implement proper authentication and authorization for production use 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
