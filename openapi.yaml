@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: Shopping Cart API
+  description: API for managing shopping carts and their items
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /api/carts:
+    post:
+      summary: Create a new shopping cart
+      description: Creates a new shopping cart for a user
+      operationId: createCart
+      tags:
+        - Shopping Cart
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The ID of the user creating the cart
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shopping cart created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingCart'
+        '400':
+          description: Bad request - Invalid user ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/carts/{cartId}:
+    get:
+      summary: Get a shopping cart by ID
+      description: Retrieves a shopping cart and its items by the cart ID
+      operationId: getCart
+      tags:
+        - Shopping Cart
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: The ID of the shopping cart
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Shopping cart found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingCart'
+        '404':
+          description: Shopping cart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a shopping cart
+      description: Deletes a shopping cart and all its items
+      operationId: deleteCart
+      tags:
+        - Shopping Cart
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: The ID of the shopping cart to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Shopping cart successfully deleted
+        '404':
+          description: Shopping cart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/carts/{cartId}/items:
+    post:
+      summary: Add an item to cart
+      description: Adds a new item to an existing shopping cart
+      operationId: addItemToCart
+      tags:
+        - Shopping Cart
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: The ID of the shopping cart
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemRequest'
+      responses:
+        '200':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingCart'
+        '400':
+          description: Bad request - Invalid item data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Shopping cart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/carts/{cartId}/items/{itemId}:
+    delete:
+      summary: Remove an item from cart
+      description: Removes an item from a shopping cart
+      operationId: removeItemFromCart
+      tags:
+        - Shopping Cart
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: The ID of the shopping cart
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: The ID of the item to remove
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Item removed from cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingCart'
+        '404':
+          description: Shopping cart or item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ShoppingCart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "175f31c3-a5ec-486c-8324-6734613a60c7"
+        userId:
+          type: string
+          example: "user123"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        totalAmount:
+          type: number
+          format: double
+          example: 179.94
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, ABANDONED]
+          example: "ACTIVE"
+      required:
+        - id
+        - userId
+        - items
+        - totalAmount
+        - status
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "78767781-16af-4d1c-922b-38c22f309333"
+        cartId:
+          type: string
+          format: uuid
+          example: "175f31c3-a5ec-486c-8324-6734613a60c7"
+        productId:
+          type: string
+          example: "prod123"
+        productName:
+          type: string
+          example: "Test Product"
+        price:
+          type: number
+          format: double
+          example: 29.99
+        quantity:
+          type: integer
+          example: 2
+      required:
+        - id
+        - cartId
+        - productId
+        - productName
+        - price
+        - quantity
+
+    CartItemRequest:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: "prod123"
+        productName:
+          type: string
+          example: "Test Product"
+        price:
+          type: number
+          format: double
+          example: 29.99
+        quantity:
+          type: integer
+          example: 2
+      required:
+        - productId
+        - productName
+        - price
+        - quantity
+
+    ErrorResponse:
+      type: object
+      properties:
+        path:
+          type: string
+          example: "/api/carts/175f31c3-a5ec-486c-8324-6734613a60c7"
+        message:
+          type: string
+          example: "Cart not found with id: 175f31c3-a5ec-486c-8324-6734613a60c7"
+        error:
+          type: string
+          example: "Not Found"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-04-12T16:13:53.753223"
+        status:
+          type: integer
+          example: 404
+      required:
+        - path
+        - message
+        - error
+        - timestamp
+        - status 

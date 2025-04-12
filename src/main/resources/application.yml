@@ -27,3 +27,13 @@ logging:
     org.springframework.web: DEBUG
     org.hibernate: INFO
     org.springframework.web.servlet.mvc.method.annotation: TRACE 
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  packages-to-scan: com.example.shoppingcartapi.controller 
